@@ -5,14 +5,18 @@
 ## Code written by Kevin Carson (kacarson@arizona.edu) and Deigo Leal (https://www.diegoleal.info/)
 ## Last Updated: 09-07-24
 #' @title Compute Fujimoto, Snijders, and Valente's (2018) Ego Homophily Distance for Two-Mode Networks
-#' @name computeTMEgoDis
+#' @name netstats_tm_egodistance
 #' @param net The two-mode adjacency matrix.
 #' @param mem The vector of membership values that the homophilous four cycles will be based on.
 #' @param standardize TRUE/FALSE. TRUE indicates that the sores will be standardized by the number of level 2 nodes the level 1 node is connected to. FALSE indicates that the scores will not be standardized. Set to FALSE by default.
+#' @import Rcpp
 #' @return The vector of two-mode ego homophily distance.
 #' @export
 #'
-#' @description This function computes the ego homophily distance in two-mode
+#' @description
+#' `r lifecycle::badge("stable")`
+#'
+#' This function computes the ego homophily distance in two-mode
 #' networks as  proposed by Fujimoto, Snijders, and Valente (2018: 380).
 #' See Fujimoto, Snijders, and Valente (2018) for more details about this
 #' measure.
@@ -55,45 +59,21 @@
 #' set.seed(9999)
 #' membership <- sample(0:1, nrow(southern.women), replace = TRUE)
 #'#the ego 2 mode distance non-standardized
-#'computeTMEgoDis(southern.women, mem = membership)
+#'netstats_tm_egodistance(southern.women, mem = membership)
 #'#the ego 2 mode distance standardized
-#'computeTMEgoDis(southern.women, mem = membership, standardize = TRUE)
+#'netstats_tm_egodistance(southern.women, mem = membership, standardize = TRUE)
 #'
-computeTMEgoDis <- function(net, #the two-mode adjacency matrix
+netstats_tm_egodistance <- function(net, #the two-mode adjacency matrix
                       mem,#the vector of membership scores
                       standardize = FALSE){ #to standardize the scores for all non_pendant groups
 
-  dist <- rep(0, nrow(net)) #creating an empty vector to store the homophily distance variables
-  for(i in 1:nrow(net)){ #for all level 1 actors in the network
-    #recreate the membership vector to 1 for all i == Vi and 0 if not
-    new <- rep(0, length(mem)) #the membership values for each actor
-    new[which(mem == mem[i])] <- 1 #the actors who share the same values
-    vi <- new[i] #the current actors value
-    mode2tie <- as.numeric(which(net[i,] == 1)) #the actors who the node is tied to
-    if(length(mode2tie) != 0){ #if the actor is not an isolate
-      for(j in 1:length(mode2tie)){ #for all groups in network Y
-        a <- mode2tie[j] #the current group
-        if(net[i,a] == 1){
-          if(sum(net[,a]) == 1){  #if there is only one actor in the group
-            dist[i] <- dist[i] + 0 #since, pia is 0/0 and illdefined
-          }else{
-            pia <- (sum(new[net[,a] == 1])-1) / (sum((net[,a] == 1)) - 1)
-            dist[i] <- dist[i] + (net[i,a] * ( 1 - abs((1 - pia)))    )
-            }
-      }
-
-    }
-
-    }
+  dist <- tmegodist(net,mem) #computing the distance measures in c++
+  if(standardize){ #if we need to standardize the scores
+    ngroups <- rowSums(net) #computing the rowsums of the network
+    ngroups[ngroups == 1] <- 0 #doing a simple check for pendants in the network
+    dist <- dist/ngroups #standardizing by the number of groups in the network
   }
-  if(standardize == TRUE){
-    pendants <- which(colSums(net) == 1) #which groups only have 1 actor
-    net[,pendants] <- 0 #making there ties now to 0
-    ngroups <- rowSums(net) #the non-pendenant group membership scores
-    dist <- dist / ngroups #standardizing the scores to be within 0 to 1.
-  }
-
-  return(dist)
+  return(dist) #returning the distance values
 }
 
 

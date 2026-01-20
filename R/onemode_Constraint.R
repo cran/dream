@@ -3,19 +3,23 @@
 ##### Last Updated: 09-09-24
 
 #' @title Compute Burt's (1992) Constraint for Ego Networks from a Sociomatrix
-#' @name computeBurtsConstraint
+#' @name netstats_om_constraint
 #' @param net A one-mode sociomatrix with network ties.
 #' @param isolates What value should isolates be given? Set to NA by default.
-#' @param pendants What value should be given to pendant vertices? Set to 1 by default.
+#' @param pendants What value should be given to pendant vertices? Set to 1 by default. Pendant vertices are those nodes who have one outgoing tie.
 #' @param inParallel TRUE/FALSE. TRUE indicates that parallel processing will be used to compute the statistic with the *foreach* package. FALSE indicates that parallel processing will not be used. Set to FALSE by default.
 #' @param nCores If inParallel = TRUE, the number of computing cores for parallel processing. If this value is not specified, then the function internally provides it by dividing the number of available cores in half.
 #' @return The vector of ego network constraint values.
 #' @import foreach
 #' @import doParallel
 #' @import parallel
+#' @import Rcpp
 #' @export
 
-#' @description This function computes Burt's (1992) one-mode ego constraint based upon a sociomatrix.
+#' @description
+#' `r lifecycle::badge("stable")`
+#'
+#' This function computes Burt's (1992) one-mode ego constraint based upon a sociomatrix.
 #' @details The formula for Burt's (1992) one-mode ego constraint is:
 #' \deqn{c_{ij} = \left(p_{ij} + \sum_{q} p_{iq} p_{qj}\right)^2 \quad ; \; q \neq i \neq j}
 #' where:
@@ -27,7 +31,7 @@
 #' While this function internally locates isolates (i.e., nodes
 #' who have no ties) and pendants (i.e., nodes who only have
 #' one tie), the user should specify what values for constraint are returned for them via the *isolates* and
-#' *pendants* options.
+#' *pendants* options. In particular, pendant vertices are those nodes who have one outgoing tie.
 #'
 #' Lastly, this function allows users to compute the values in parallel via the
 #' *foreach*, *doParallel*, and *parallel* R packages.
@@ -51,7 +55,7 @@
 #' colnames(BurtEgoNet) <- rownames(BurtEgoNet) <- c("A", "B", "C", "D", "E",
 #'                                                  "F", "ego")
 #' #the constraint value for the ego replicates that provided in Burt (1992: 56)
-#' computeBurtsConstraint(BurtEgoNet)
+#' netstats_om_constraint(BurtEgoNet)
 #'
 #'
 
@@ -59,7 +63,7 @@
 ###     Burt's Constraint Measure for Ego Networks
 #################################################################################
 
-computeBurtsConstraint <- function(net, # the full sociomatrix
+netstats_om_constraint <- function(net, # the full sociomatrix
                   inParallel = FALSE, # should this be computed in parallel?
                   nCores = NULL, # the number of cores for computing in parallel?
                   isolates = NA, # what value should isolates get?
@@ -97,14 +101,7 @@ computeBurtsConstraint <- function(net, # the full sociomatrix
         next
       } # if the ego i has only one alter: constraint = 0, ,
       # then go to the next ego, ego with one alter cannot be constrained
-      Z <- neti + t(neti) # connection zij is made symmetric prior to computing pij
-      sumzq <- rowSums(Z) # the outdegree of ego i
-      pij <- Z / sumzq # pij: proportion of time ego i spends with any alter j
-      pij[is.na(pij)] <- 0 # values divided by 0 go to zero [this acts as a check for isolates in the network with 0 degree]
-      psumq <- pij %*% pij # Sum Q: that is, the proportion i and j spend with any alter q
-      diag(psumq) <- 0 # Making the diagonal zero, that is an ego or alter cannot be constrained in relation to themselves
-      Ci <- rowSums((pij + psumq)^2) # Following Burt: Constraint C = Sum(pij + Sum pij * pij)^2
-      constraint[i] <- (round(as.numeric(Ci), 4))[1] # rounding the constraint for the ego and adding it to the constraint value vector
+      constraint[i] <- burtconstraint(net = neti, nactors = nrow(neti)) #compute the value for constraint for the actor in c++
     }
 
     ifelse(is.null(rownames(net)),
@@ -138,14 +135,7 @@ computeBurtsConstraint <- function(net, # the full sociomatrix
           return(pendants)
         } # if the ego i has only one alter: constraint = 0, ,
         # then go to the next ego, ego with one alter cannot be constrained
-        Z <- neti + t(neti) # connection zij is made symmetric prior to computing pij
-        sumzq <- rowSums(Z) # the outdegree of ego i
-        pij <- Z / sumzq # pij: proportion of time ego i spends with any alter j
-        pij[is.na(pij)] <- 0 # values divided by 0 go to zero [this acts as a check for isolates in the network with 0 degree]
-        psumq <- pij %*% pij # Sum Q: that is, the proportion i and j spend with any alter q
-        diag(psumq) <- 0 # Making the diagonal zero, that is an ego or alter cannot be constrained in relation to themselves
-        Ci <- rowSums((pij + psumq)^2) # Following Burt: Constraint C = Sum(pij + Sum pij * pij)^2
-        (round(as.numeric(Ci), 4))[1] # rounding the constraint for the ego and adding it to the constraint value vector
+        burtconstraint(net = neti, nactors = nrow(neti)) #compute the value for constraint for the actor in c++
       })
 
     parallel::stopCluster(myCluster) # closing the cluster

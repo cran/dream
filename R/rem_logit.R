@@ -1,7 +1,7 @@
 # Code Written By Kevin Carson (06-27-25)
 
 #' @title Fit a Relational Event Model (REM) to Event Sequence Data
-#' @name estimateREM
+#' @name estimate_rem_logit
 #' @param formula A formula object with the dependent variable on the left hand side of
 #' ~ and the covariates on the right hand side. This is the same argument found in \code{\link[stats]{lm}} and \code{\link[stats]{glm}}.
 #' @param event.cluster An integer or factor vector that groups each observed event with its corresponding control (null) events.
@@ -57,7 +57,10 @@
 #' @export
 
 
-#' @description This function estimates the ordinal timing relational event model by maximizing the
+#' @description
+#' `r lifecycle::badge("stable")`
+#'
+#' This function estimates the ordinal timing relational event model by maximizing the
 #' likelihood function given by Butts (2008) via maximum likelihood estimation. A nice outcome
 #' is that the ordinal timing relational event model is equivalent to the conditional logistic
 #' regression (see Greene 2003; for R functions, see \code{\link[survival]{clogit}}). In
@@ -116,58 +119,62 @@
 #'
 #'@examples
 #'#Creating a psuedo one-mode relational event sequence with ordinal timing
-#'relational.seq <- simulateRESeq(n_actors = 8,
-#'                                n_events = 50,
-#'                                inertia = TRUE,
-#'                                inertia_p = 0.10,
-#'                                sender_outdegree = TRUE,
-#'                                sender_outdegree_p = 0.05)
+#'relational.seq <- simulate_rem_seq(n_actors = 8,
+#'                                   n_events = 50,
+#'                                   inertia = TRUE,
+#'                                   inertia_p = 0.10,
+#'                                  sender_outdegree = TRUE,
+#'                                   sender_outdegree_p = 0.05)
 #'
 #'#Creating a post-processing event sequence for the above relational sequence
-#'post.processing <- processOMEventSeq(data = relational.seq,
-#'                                     time = relational.seq$eventID,
-#'                                     eventID = relational.seq$eventID,
-#'                                     sender = relational.seq$sender,
-#'                                     receiver = relational.seq$target,
-#'                                     n_controls = 5)
+#'post.processing <- create_riskset(type = "one-mode",
+#'                                  time = relational.seq$eventID,
+#'                                  eventID = relational.seq$eventID,
+#'                                  sender = as.character(relational.seq$sender),
+#'                                  receiver = as.character(relational.seq$target),
+#'                                  n_controls = 5)
 #'
 #'#Computing the sender-outdegree statistic for the above post-processing
 #'#one-mode relational event sequence
-#'post.processing$sender.outdegree <- computeSenderOutdegree(
-#'                                    observed_time = relational.seq$eventID,
-#'                                    observed_sender = relational.seq$sender,
-#'                                    processed_time = post.processing$time,
-#'                                    processed_sender = post.processing$sender,
-#'                                    counts = TRUE)
+#'post.processing$sender.outdegree <- remstats_degree(formation = "sender-outdegree",
+#'                                                    time = post.processing$time,
+#'                                                    observed = post.processing$observed,
+#'                                                    sampled = post.processing$sampled,
+#'                                                    sender = post.processing$sender,
+#'                                                    receiver = post.processing$receiver,
+#'                                                    halflife = 2, #halflife parameter
+#'                                                    dyadic_weight = 0,
+#'                                                   exp_weight_form = FALSE)
 #'
 #'#Computing the inertia/repetition statistic for the above post-processing
 #'#one-mode relational event sequence
-#'post.processing$inertia <- computeRepetition(
-#'                           observed_time = relational.seq$eventID,
-#'                           observed_sender = relational.seq$sender,
-#'                           observed_receiver = relational.seq$target,
-#'                           processed_time = post.processing$time,
-#'                           processed_sender = post.processing$sender,
-#'                           processed_receiver = post.processing$receiver,
-#'                           counts = TRUE)
+#'post.processing$inertia <- remstats_repetition(time = post.processing$time,
+#'                                               observed = post.processing$observed,
+#'                                              sampled = post.processing$sampled,
+#'                                              sender = post.processing$sender,
+#'                                              receiver = post.processing$receiver,
+#'                                              halflife = 2, #halflife parameter
+#'                                              dyadic_weight = 0,
+#'                                              exp_weight_form = FALSE)
 #'
 #'#Fitting a (ordinal) relational event model to the above one-mode relational
 #'#event sequence
-#'rem <- estimateREM(observed~sender.outdegree+inertia,
-#'                   event.cluster = post.processing$time,
-#'                   data=post.processing)
+#'rem <- estimate_rem_logit(observed~ sender.outdegree + inertia,
+#'                          event.cluster = post.processing$time,
+#'                          data=post.processing)
 #'summary(rem) #summary of the relational event model
 #'
 #'#Fitting a (ordinal) relational event model to the above one-mode relational
 #'#event sequence via the optim function
-#'rem1 <- estimateREM(observed~sender.outdegree+inertia,
-#'                   event.cluster = post.processing$time,
-#'                   data=post.processing,
-#'                   newton.rhapson=FALSE) #use the optim function
+#'rem1 <- estimate_rem_logit(observed~ sender.outdegree + inertia,
+#'                           event.cluster = post.processing$time,
+#'                           data=post.processing,
+#'                           newton.rhapson=FALSE)
 #'summary(rem1) #summary of the relational event model
+#'
+#'
 
-
-estimateREM <- function(formula,
+estimate_rem_logit <- function(formula,
                            event.cluster,
                            data,
                            ordinal = TRUE,

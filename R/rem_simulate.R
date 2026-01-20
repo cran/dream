@@ -2,7 +2,7 @@
 ## Code written by Kevin Carson (kacarson@arizona.edu) and Deigo Leal (https://www.diegoleal.info/)
 ## Last Updated: 11-22-24
 #' @title Simulate a Random One-Mode Relational Event Sequence
-#' @name simulateRESeq
+#' @name simulate_rem_seq
 #' @param n_actors The number of potential actors in the event sequence.
 #' @param n_events The number of simulated events for the relational event sequence.
 #' @param inertia TRUE/FALSE. True indicates the effect will be included (see the details section). FALSE indicates the effect will not be included.
@@ -25,6 +25,7 @@
 #' @param three_cycles_p If *three_cycles* = TRUE, the numerical value that corresponds to the parameter weight for the three cycles statistic.
 #' @param starting_events A *n* x 2 dataframe with *n* starting events and 2 columns. The first column should be the sender and the second should be the target.
 #' @param returnStats TRUE/FALSE. TRUE indicates that the requested network statistics will be returned alongside the simulated relational event sequence. FALSE indicates that only the simulated relational event sequence will be returned. Set to FALSE by default.
+#' @param rseed A value for the starting seed for the random number generator. Set to 9999 by default.
 #' @return A data frame that contains the simulated relational event sequence with the sufficient statistics (if requested).
 #' @importFrom collapse whichv
 #' @import data.table
@@ -32,13 +33,16 @@
 
 
 #' @description
-#' The function allows users to simulate a random one-mode relational event sequence
-#' between *n* actors for *k* events. Importantly, this function follows the methods
-#' discussed in Butts (2008), Amati, Lomi, and Snijders (2024), and Scheter and
-#' Quintane (2021). See the details for more information on this algorithm. Critically,
-#' this function can be used to simulate a random event sequence, to assess the goodness of
-#' fit for ordinal timing relational event models (see Amati, Lomi, and Snijders 2024), and simulate
-#' random outcomes for relational outcome models.
+#' `r lifecycle::badge("stable")`
+#'
+#'The function allows users to simulate a random one-mode relational event sequence
+#'between *n* actors for *k* events. This function follows the methods discussed
+#'in Butts (2008), Amati, Lomi, and Snijders (2024), and Scheter and
+#'Quintane (2021). See the details section for more information on this
+#'algorithm. Importanty, this function can be used to simulate a random event
+#'sequence to assess the goodness of fit for ordinal timing relational event
+#'models (see Amati, Lomi, and Snijders 2024), and simulate random outcomes
+#'for relational outcome models.
 #'
 #' @details
 #' Following the authors listed in the descriptions section, the probability of
@@ -82,12 +86,14 @@
 #' Where *n* represents the counts of past events, *i* is the event sender, and *j* is the event target. See Scheter and Quintane (2021)
 #' and Butts (2008) for a further discussion of these statistics.
 #'
-#' Users are allowed to insert a starting event sequence to base the simulation on. A few things are worth nothing. The starting
-#' event sequence should be a matrix with *n* rows indicating the number of starting events and 2 columns, with the
-#' first representing the event senders and the second column representing the event targets. Internally, the number
-#' of actors is ignored, as the number of possible actors in the risk set is based only on the actors present in the
-#' starting event sequence. Finally, the sender and target actor IDs should be numerical values.
-#'
+#'Users are allowed to insert a starting event sequence to base the simulation
+#'on. A few things are worth nothing. The starting event sequence should be a
+#'matrix with *n* rows indicating the number of starting events and 2 columns, with
+#'the first representing the event senders and the second column
+#'representing the event receivers. Internally, the number of actors is
+#'ignored, as the number of possible actors in the risk set is based only on
+#'the actors present in the starting event sequence. Finally, the sender and
+#'receiver actor IDs should be numerical values.
 #'
 #' @author Kevin A. Carson <kacarson@arizona.edu>, Diego F. Leal <dflc@arizona.edu>
 #' @references
@@ -104,7 +110,7 @@
 #'
 #' @examples
 #'#Creating a random relational sequence with 5 actors and 25 events
-#'rem1<- simulateRESeq(n_actors = 25,
+#'rem1<- simulate_rem_seq(n_actors = 25,
 #'                      n_events = 1000,
 #'                      inertia = TRUE,
 #'                      inertia_p = 0.12,
@@ -126,7 +132,7 @@
 #'
 #' #Creating a random relational sequence with 100 actors and 1000 events with
 #' #only inertia and reciprocity
-#'rem2 <- simulateRESeq(n_actors = 100,
+#'rem2 <- simulate_rem_seq(n_actors = 100,
 #'                      n_events = 1000,
 #'                      inertia = TRUE,
 #'                      inertia_p = 0.12,
@@ -137,7 +143,7 @@
 #'
 #'#Creating a random relational sequence based on the starting sequence with
 #'#only inertia and reciprocity
-#'rem3 <- simulateRESeq(n_actors = 100, #does not matter can be any value, this is
+#'rem3 <- simulate_rem_seq(n_actors = 100, #does not matter can be any value, this is
 #'                                     #overridden by the starting event sequence
 #'                     n_events = 100,
 #'                     inertia = TRUE,
@@ -151,7 +157,7 @@
 #'rem3
 
 
-simulateRESeq <- function(n_actors,
+simulate_rem_seq <- function(n_actors,
                          n_events,
                          inertia = FALSE,
                          inertia_p = 0,
@@ -172,7 +178,8 @@ simulateRESeq <- function(n_actors,
                          three_cycles = FALSE,
                          three_cycles_p = 0,
                          starting_events = NULL,
-                         returnStats = FALSE){
+                         returnStats = FALSE,
+                         rseed = 9999){
 
   ##################################################################################
   #
@@ -271,7 +278,7 @@ simulateRESeq <- function(n_actors,
     }
 
   }
-
+  set.seed(rseed) #based upon the users input for the random seed
   if(is.null(starting_events)){
 
     #intializing the risk set, namely, the relational events that could occur

@@ -4,14 +4,18 @@
 ## Last Updated: 09-07-24
 
 #' @title Compute Degree Centrality Values for Two-Mode Networks
-#' @name computeTMDegree
+#' @name netstats_tm_degreecent
 #' @param net A two-mode adjacency matrix
 #' @param level1 TRUE/FALSE. TRUE indicates that the degree centrality will be computed for level 1 nodes. FALSE indicates that the degree centrality will be computed for level 2 nodes. Set to TRUE by default.
+#' @import Rcpp
 #' @return The vector of two-mode level-specific degree centrality values.
 #' @export
 #'
 #'
-#' @description This function computes the degree centrality values for two-mode
+#' @description
+#' `r lifecycle::badge("stable")`
+#'
+#' This function computes the degree centrality values for two-mode
 #' networks following Knoke and Yang (2020). The computed degree centrality is
 #' based on the specified level. That is, in an affiliation matrix, the density
 #' can be computed on the symmetric *g x g* co-membership matrix of
@@ -45,27 +49,20 @@
 #'                           nrow = 5, ncol = 4)
 #'colnames(knoke_yang_PC) <- c("Rubio-R","McConnell-R", "Reid-D", "Sanders-D")
 #'rownames(knoke_yang_PC) <- c("UPS", "MS", "HD", "SEU", "ANA")
-#'computeTMDegree(knoke_yang_PC, level1 = TRUE) #this value matches the book
-#'computeTMDegree(knoke_yang_PC, level1 = FALSE) #this value matches the book
+#'netstats_tm_degreecent(knoke_yang_PC, level1 = TRUE) #this value matches the book
+#'netstats_tm_degreecent(knoke_yang_PC, level1 = FALSE) #this value matches the book
 
-computeTMDegree <- function(net,#a two-mode network adjancency matrix
+netstats_tm_degreecent <- function(net,#a two-mode network adjancency matrix
                       level1 = TRUE){#Boolean: TRUE indicating if the density should be
   #computed on level 1 nodes, FALSE computes graph density for the level 2 nodes
 
   if(level1 == TRUE){ #should level 1 density be computed?
-    xA <- net %*% t(net) #if so, get the level 1 x level 1 matrix
-  }else{ #if not
-    xA <- t(net) %*% net #get the level 2 x level 2 matrix
-  }
-  diag(xA) <- 0 #making the diagonal zero
-  xA[xA > 1] <- 1
-  degree <- rowSums(xA) #the degree of each actor in the specific network
-
-  if(level1 == TRUE){
+    degree <- tmdegcentraility(net) #computing level 1 degree in c++
     ifelse(is.null(rownames(net)),
            names(degree) <- NULL,
            names(degree) <- rownames(net))
-  }else{
+  }else{ #if not
+    degree <- tmdegcentraility(t(net))#computing level 2 degree in c++
     ifelse(is.null(colnames(net)),
            names(degree) <- NULL,
            names(degree) <-colnames(net))
