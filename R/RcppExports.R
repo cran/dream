@@ -17,20 +17,8 @@ computeremweightsv2 <- function(time, sampledevent, controlevent, dyad_id, dyad_
     .Call(`_dream_computeremweightsv2`, time, sampledevent, controlevent, dyad_id, dyad_idOpposite, weightScheme, counts, cutweight, halflife)
 }
 
-computeincomingsharedparts <- function(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender) {
-    .Call(`_dream_computeincomingsharedparts`, time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender)
-}
-
-computeincomingtwopaths <- function(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender) {
-    .Call(`_dream_computeincomingtwopaths`, time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender)
-}
-
-computeoutsharedpart <- function(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender) {
-    .Call(`_dream_computeoutsharedpart`, time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender)
-}
-
-computeouttwopaths <- function(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender) {
-    .Call(`_dream_computeouttwopaths`, time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender)
+computetriadsrem <- function(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender, tri_type) {
+    .Call(`_dream_computetriadsrem`, time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender, tri_type)
 }
 
 extractEventData <- function(stats, outcome, event_cluster, names) {
@@ -47,6 +35,10 @@ pibcpp <- function(net, gmem, symmetric, traidtype, count, isolate) {
 
 computerecencynorank <- function(time, sampledevent, controlevent, dyad_id, sender, target, i_neighborhood, raw_diff, nopastEvents, appender) {
     .Call(`_dream_computerecencynorank`, time, sampledevent, controlevent, dyad_id, sender, target, i_neighborhood, raw_diff, nopastEvents, appender)
+}
+
+processREMseqOM_varying <- function(time, seqid, sender, target, pobserved = 1, ncontrols = 1, appender = "__NIKOACAR3718__", rseed = 9999) {
+    .Call(`_dream_processREMseqOM_varying`, time, seqid, sender, target, pobserved, ncontrols, appender, rseed)
 }
 
 persistencerem <- function(time, sampledevent, controlevent, dyad_id, actor, timedependency, cuttime, nopastEvents) {
@@ -99,5 +91,9 @@ tmdegcentraility <- function(tmnet) {
 
 tmegodist <- function(net, mem) {
     .Call(`_dream_tmegodist`, net, mem)
+}
+
+processREMseqTM_varying <- function(time, seqid, sender, target, pobserved = 1, ncontrols = 1, appender = "__NIKOACAR3718__", rseed = 9999) {
+    .Call(`_dream_processREMseqTM_varying`, time, seqid, sender, target, pobserved, ncontrols, appender, rseed)
 }
 

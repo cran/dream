@@ -71,9 +71,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// computeincomingsharedparts
-NumericVector computeincomingsharedparts(NumericVector time, NumericVector sampledevent, NumericVector controlevent, CharacterVector sender, CharacterVector target, CharacterVector dyad_id, double weightScheme, double counts, double cutweight, double halflife, std::string appender);
-RcppExport SEXP _dream_computeincomingsharedparts(SEXP timeSEXP, SEXP sampledeventSEXP, SEXP controleventSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP dyad_idSEXP, SEXP weightSchemeSEXP, SEXP countsSEXP, SEXP cutweightSEXP, SEXP halflifeSEXP, SEXP appenderSEXP) {
+// computetriadsrem
+NumericVector computetriadsrem(NumericVector time, NumericVector sampledevent, NumericVector controlevent, CharacterVector sender, CharacterVector target, CharacterVector dyad_id, double weightScheme, double counts, double cutweight, double halflife, std::string appender, std::string tri_type);
+RcppExport SEXP _dream_computetriadsrem(SEXP timeSEXP, SEXP sampledeventSEXP, SEXP controleventSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP dyad_idSEXP, SEXP weightSchemeSEXP, SEXP countsSEXP, SEXP cutweightSEXP, SEXP halflifeSEXP, SEXP appenderSEXP, SEXP tri_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -88,70 +88,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type cutweight(cutweightSEXP);
     Rcpp::traits::input_parameter< double >::type halflife(halflifeSEXP);
     Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeincomingsharedparts(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeincomingtwopaths
-NumericVector computeincomingtwopaths(NumericVector time, NumericVector sampledevent, NumericVector controlevent, CharacterVector sender, CharacterVector target, CharacterVector dyad_id, double weightScheme, double counts, double cutweight, double halflife, std::string appender);
-RcppExport SEXP _dream_computeincomingtwopaths(SEXP timeSEXP, SEXP sampledeventSEXP, SEXP controleventSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP dyad_idSEXP, SEXP weightSchemeSEXP, SEXP countsSEXP, SEXP cutweightSEXP, SEXP halflifeSEXP, SEXP appenderSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sampledevent(sampledeventSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type controlevent(controleventSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type sender(senderSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type dyad_id(dyad_idSEXP);
-    Rcpp::traits::input_parameter< double >::type weightScheme(weightSchemeSEXP);
-    Rcpp::traits::input_parameter< double >::type counts(countsSEXP);
-    Rcpp::traits::input_parameter< double >::type cutweight(cutweightSEXP);
-    Rcpp::traits::input_parameter< double >::type halflife(halflifeSEXP);
-    Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeincomingtwopaths(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeoutsharedpart
-NumericVector computeoutsharedpart(NumericVector time, NumericVector sampledevent, NumericVector controlevent, CharacterVector sender, CharacterVector target, CharacterVector dyad_id, double weightScheme, double counts, double cutweight, double halflife, std::string appender);
-RcppExport SEXP _dream_computeoutsharedpart(SEXP timeSEXP, SEXP sampledeventSEXP, SEXP controleventSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP dyad_idSEXP, SEXP weightSchemeSEXP, SEXP countsSEXP, SEXP cutweightSEXP, SEXP halflifeSEXP, SEXP appenderSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sampledevent(sampledeventSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type controlevent(controleventSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type sender(senderSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type dyad_id(dyad_idSEXP);
-    Rcpp::traits::input_parameter< double >::type weightScheme(weightSchemeSEXP);
-    Rcpp::traits::input_parameter< double >::type counts(countsSEXP);
-    Rcpp::traits::input_parameter< double >::type cutweight(cutweightSEXP);
-    Rcpp::traits::input_parameter< double >::type halflife(halflifeSEXP);
-    Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeoutsharedpart(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeouttwopaths
-NumericVector computeouttwopaths(NumericVector time, NumericVector sampledevent, NumericVector controlevent, CharacterVector sender, CharacterVector target, CharacterVector dyad_id, double weightScheme, double counts, double cutweight, double halflife, std::string appender);
-RcppExport SEXP _dream_computeouttwopaths(SEXP timeSEXP, SEXP sampledeventSEXP, SEXP controleventSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP dyad_idSEXP, SEXP weightSchemeSEXP, SEXP countsSEXP, SEXP cutweightSEXP, SEXP halflifeSEXP, SEXP appenderSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sampledevent(sampledeventSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type controlevent(controleventSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type sender(senderSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type target(targetSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type dyad_id(dyad_idSEXP);
-    Rcpp::traits::input_parameter< double >::type weightScheme(weightSchemeSEXP);
-    Rcpp::traits::input_parameter< double >::type counts(countsSEXP);
-    Rcpp::traits::input_parameter< double >::type cutweight(cutweightSEXP);
-    Rcpp::traits::input_parameter< double >::type halflife(halflifeSEXP);
-    Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeouttwopaths(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender));
+    Rcpp::traits::input_parameter< std::string >::type tri_type(tri_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(computetriadsrem(time, sampledevent, controlevent, sender, target, dyad_id, weightScheme, counts, cutweight, halflife, appender, tri_type));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -214,6 +152,24 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type nopastEvents(nopastEventsSEXP);
     Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
     rcpp_result_gen = Rcpp::wrap(computerecencynorank(time, sampledevent, controlevent, dyad_id, sender, target, i_neighborhood, raw_diff, nopastEvents, appender));
+    return rcpp_result_gen;
+END_RCPP
+}
+// processREMseqOM_varying
+List processREMseqOM_varying(std::vector<double> time, std::vector<double> seqid, std::vector<std::string> sender, std::vector<std::string> target, double pobserved, double ncontrols, std::string appender, double rseed);
+RcppExport SEXP _dream_processREMseqOM_varying(SEXP timeSEXP, SEXP seqidSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP pobservedSEXP, SEXP ncontrolsSEXP, SEXP appenderSEXP, SEXP rseedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type seqid(seqidSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type sender(senderSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< double >::type pobserved(pobservedSEXP);
+    Rcpp::traits::input_parameter< double >::type ncontrols(ncontrolsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
+    Rcpp::traits::input_parameter< double >::type rseed(rseedSEXP);
+    rcpp_result_gen = Rcpp::wrap(processREMseqOM_varying(time, seqid, sender, target, pobserved, ncontrols, appender, rseed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -410,20 +366,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// processREMseqTM_varying
+List processREMseqTM_varying(std::vector<double> time, std::vector<double> seqid, std::vector<std::string> sender, std::vector<std::string> target, double pobserved, double ncontrols, std::string appender, double rseed);
+RcppExport SEXP _dream_processREMseqTM_varying(SEXP timeSEXP, SEXP seqidSEXP, SEXP senderSEXP, SEXP targetSEXP, SEXP pobservedSEXP, SEXP ncontrolsSEXP, SEXP appenderSEXP, SEXP rseedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type seqid(seqidSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type sender(senderSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< double >::type pobserved(pobservedSEXP);
+    Rcpp::traits::input_parameter< double >::type ncontrols(ncontrolsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type appender(appenderSEXP);
+    Rcpp::traits::input_parameter< double >::type rseed(rseedSEXP);
+    rcpp_result_gen = Rcpp::wrap(processREMseqTM_varying(time, seqid, sender, target, pobserved, ncontrols, appender, rseed));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dream_burteffective", (DL_FUNC) &_dream_burteffective, 2},
     {"_dream_burtconstraint", (DL_FUNC) &_dream_burtconstraint, 2},
     {"_dream_computeREMweightsv1", (DL_FUNC) &_dream_computeREMweightsv1, 8},
     {"_dream_computeremweightsv2", (DL_FUNC) &_dream_computeremweightsv2, 9},
-    {"_dream_computeincomingsharedparts", (DL_FUNC) &_dream_computeincomingsharedparts, 11},
-    {"_dream_computeincomingtwopaths", (DL_FUNC) &_dream_computeincomingtwopaths, 11},
-    {"_dream_computeoutsharedpart", (DL_FUNC) &_dream_computeoutsharedpart, 11},
-    {"_dream_computeouttwopaths", (DL_FUNC) &_dream_computeouttwopaths, 11},
+    {"_dream_computetriadsrem", (DL_FUNC) &_dream_computetriadsrem, 12},
     {"_dream_extractEventData", (DL_FUNC) &_dream_extractEventData, 4},
     {"_dream_checkVarianceData", (DL_FUNC) &_dream_checkVarianceData, 2},
     {"_dream_pibcpp", (DL_FUNC) &_dream_pibcpp, 6},
     {"_dream_computerecencynorank", (DL_FUNC) &_dream_computerecencynorank, 10},
+    {"_dream_processREMseqOM_varying", (DL_FUNC) &_dream_processREMseqOM_varying, 8},
     {"_dream_persistencerem", (DL_FUNC) &_dream_persistencerem, 8},
     {"_dream_computeremprefattach", (DL_FUNC) &_dream_computeremprefattach, 5},
     {"_dream_prefattachrelspanrem", (DL_FUNC) &_dream_prefattachrelspanrem, 6},
@@ -437,6 +409,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dream_computefourcyclesrem", (DL_FUNC) &_dream_computefourcyclesrem, 11},
     {"_dream_tmdegcentraility", (DL_FUNC) &_dream_tmdegcentraility, 1},
     {"_dream_tmegodist", (DL_FUNC) &_dream_tmegodist, 2},
+    {"_dream_processREMseqTM_varying", (DL_FUNC) &_dream_processREMseqTM_varying, 8},
     {NULL, NULL, 0}
 };
 

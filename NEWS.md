@@ -1,3 +1,16 @@
+# dream 1.0.1 (2026-01-30)
+
+## Major Changes
+
+* Implemented a new function to create time-dynamic risk sets for one- and two-mode
+relational event sequences. The new function is named `create_riskset_dynamic()`. 
+
+## Minor Changes
+
+* Updated the `remstats_`-related `C++` files to delete past network edges (i.e., past 
+event weights) that are smaller than the past event cut off value (i.e., `dyadic_weight`) when this feature is 
+selected by the user. That is, when the `dyadic_weight` argument is non-zero.
+
 # dream 1.0.0 (2026-01-19)
 
 ## Major Changes

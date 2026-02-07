@@ -5,11 +5,6 @@
 
 <!-- badges: start -->
 
-[![](https://www.r-pkg.org/badges/version/dream?color=blue)](https://cran.r-project.org/package=dream)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/dream?color=red)](https://cran.r-project.org/package=dream)
-[![CRAN
-checks](https://badges.cranchecks.info/summary/dream.svg)](https://cran.r-project.org/web/checks/check_results_dream.html)
-
 [![R-CMD-check](https://github.com/kevinCarson/dream/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kevinCarson/dream/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -66,12 +61,11 @@ You can install the stable verison of `dream` from
 install.packages("dream")
 ```
 
-You can install the development version of `dream` from
+You can install the developmental version of `dream` from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("kevinCarson/dream")
+remotes::install_github("kevinCarson/dream")
 ```
 
 ## The `dream` Package API
@@ -90,7 +84,7 @@ prefix identifies what category the specific function corresponds to
 The `remstats_` functions compute relational/network statistics for
 relational event sequences. For instance, `remstats_fourcycles` computes
 the four-cycles network statistic for a two-mode relational event
-sequence. The `create_` function creates a risk-set for one- and
+sequence. The `create_` functions creates a risk-set for one- and
 two-mode relational event sequences based on a set of sampling
 procedures. The `netstats_om_` series of functions compute static
 network statics for one-mode networks (i.e., `netstats_om_pib` computes
@@ -141,7 +135,7 @@ data("WikiEvent2018.first100k")
 WikiEvent2018.first100k$time <- as.numeric(WikiEvent2018.first100k$time)
 ### Creating the EventSet By Employing Case-Control Sampling With M = 10 and
 ### Sampling from the Observed Event Sequence with P = 0.01
-EventSet <- create_riskset(
+EventSet <- create_riskset_dynamic(
   type = "two-mode",
   time = WikiEvent2018.first100k$time, # The Time Variable
   eventID = WikiEvent2018.first100k$eventID, # The Event Sequence Variable
@@ -179,7 +173,7 @@ post.processing.riskset$repetition <- remstats_repetition(
    sampled = EventSet$sampled,
    observed = EventSet$observed,
    halflife = 2.592e+09, 
-   dyadic_weight = 0,
+   dyadic_weight = 0.01,
    exp_weight_form = FALSE)
 
 # computing the sender outdegree statistic with the exponential weights and a halflife
@@ -192,7 +186,7 @@ post.processing.riskset$sender.outdegree <- remstats_degree(
    sampled = EventSet$sampled,
    observed = EventSet$observed,
    halflife = 2.592e+09, 
-   dyadic_weight = 0,
+   dyadic_weight = 0.01,
    exp_weight_form = FALSE)
 
 # computing the receiver indegree statistic with the exponential weights and a halflife
@@ -205,7 +199,7 @@ post.processing.riskset$receiver.indegree <- remstats_degree(
    sampled = EventSet$sampled,
    observed = EventSet$observed,
    halflife = 2.592e+09, 
-   dyadic_weight = 0,
+   dyadic_weight = 0.01,
    exp_weight_form = FALSE)
 
 # computing the four-cycles statistic with the exponential weights and a halflife
@@ -217,8 +211,14 @@ post.processing.riskset$fourcycles <- remstats_fourcycles(
    sampled = EventSet$sampled,
    observed = EventSet$observed,
    halflife = 2.592e+09, 
-   dyadic_weight = 0,
+   dyadic_weight = 0.01,
    exp_weight_form = FALSE)
+
+#transforming the variables following Lerner and Lomi (2020) 
+post.processing.riskset$fourcycles <- log1p(post.processing.riskset$fourcycles)
+post.processing.riskset$sender.outdegree <- log1p(post.processing.riskset$sender.outdegree)
+post.processing.riskset$receiver.indegree <- log1p(post.processing.riskset$receiver.indegree)
+post.processing.riskset$repetition <- log1p(post.processing.riskset$repetition)
 
 # Estimating the ordinal relational event model! 
 lerner.lomi.rem <- estimate_rem_logit(observed ~ 
@@ -248,20 +248,20 @@ summary(lerner.lomi.rem)
 #>  n events: 10000 null events: 1e+05 
 #> 
 #> Coefficients:
-#>                                    Estimate Std. Error z value  Pr(>|z|)    
-#> repetition                           7.1365     0.3970  17.976 < 2.2e-16 ***
-#> sender.outdegree                     0.0219     0.0005  44.825 < 2.2e-16 ***
-#> receiver.indegree                    0.1580     0.0093  16.995 < 2.2e-16 ***
-#> fourcycles                           1.3161     0.0465  28.334 < 2.2e-16 ***
-#> sender.outdegree:receiver.indegree  -0.0009     0.0001 -10.218 < 2.2e-16 ***
+#>                                    Estimate Std. Error z value Pr(>|z|)    
+#> repetition                           6.9705     0.2758 25.2723   <2e-16 ***
+#> sender.outdegree                     1.1173     0.0172 64.9368   <2e-16 ***
+#> receiver.indegree                    0.2917     0.0682  4.2754   <2e-16 ***
+#> fourcycles                           0.5739     0.0777  7.3871   <2e-16 ***
+#> sender.outdegree:receiver.indegree  -0.0667     0.0232 -2.8750    0.004 ** 
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Null Likelihood: -23978.95 Model Likelihood: -7558.12 
+#> Null Likelihood: -23978.95 Model Likelihood: -5827.479 
 #> 
-#> Likelihood Ratio Test: 32841.67  with df: 5 p-value: 0 
+#> Likelihood Ratio Test: 36302.95  with df: 5 p-value: 0 
 #> 
-#> AIC 15126.24 BIC 15162.29
+#> AIC 11664.96 BIC 11701.01
 ```
 
 ## Questions, Comments, or Suggestions!
